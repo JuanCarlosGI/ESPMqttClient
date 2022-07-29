@@ -31,19 +31,6 @@ WiFiCredentials SpiffsWiFiCredentialsProvider::GetWiFiCredentials()
     SPIFFS.end();
     return WiFiCredentials();
   }
-  
-  // uint8_t* pBuffer;
-  
-  // unsigned int fileSize = testFile.size();
-  // pBuffer = (uint8_t*)malloc(fileSize + 1);
-  // testFile.read(pBuffer, fileSize);
-  // pBuffer[fileSize] = '\0';
-  // testFile.close();
-  // SPIFFS.end();
-
-  // StaticJsonDocument<200> doc;
-  // DeserializationError error = deserializeJson(doc, pBuffer);
-  // free(pBuffer);
 
   StaticJsonDocument<200> doc;
   DeserializationError error = deserializeJson(doc, testFile);

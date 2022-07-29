@@ -1,4 +1,5 @@
 #include "WiFiManager.h"
+#include "MdnsServiceResolver.h"
 
 class MqttClient {
   public:
@@ -7,7 +8,8 @@ class MqttClient {
   private:
     enum State {
       ConnectToWiFi,
-      FinalSetup
+      ResolveMqttService,
+      SomeOtherMqtt,
     };
 
     State _state = ConnectToWiFi;
@@ -22,11 +24,25 @@ void MqttClient::Run()
     {
       if (_wifiManager.ConnectToWiFi())
       {
-        _state = FinalSetup;
+        _state = ResolveMqttService;
       }
       break;
     }
-    case FinalSetup: 
+    case ResolveMqttService: 
+    {
+      MdnsServiceResolver resolver;
+      ResolvedServiceAddress resolvedAddress = resolver.ResolveServiceAddress("mqtt", "tcp");
+
+      if (resolvedAddress.IpAddress == IPAddress(0,0,0,0))
+      {
+        Serial.println("Failed to resolve MQTT service. Retrying in 10 seconds...");
+        delay(10000);
+        return;
+      }
+
+      _state = SomeOtherMqtt;
       break;
+    }
+    case SomeOtherMqtt: break;
   }
 }
